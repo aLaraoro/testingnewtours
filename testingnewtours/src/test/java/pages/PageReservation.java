@@ -15,7 +15,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import assertpage.AssertPages;
-import helpers.Helpers;
 
 public class PageReservation {
 
@@ -34,7 +33,6 @@ public class PageReservation {
 	private By flights;
 	private By findFlights;
 	private String rowFly;
-	private Helpers helpers; 
 
 	public PageReservation(WebDriver driver) {
 
@@ -64,6 +62,19 @@ public class PageReservation {
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		AssertPages assertPages = new AssertPages(driver);
 		assertPages.assertFlights(false, condition);
+		
+		
+	}
+	
+	public List<String> confirmation(Map<String,String[]> details){
+		String fromPort=details.get("fromPort")[0];
+		String toPort=details.get("toPort")[0];
+		String toDate=details.get("toMonth")[0] + "/" + details.get("toDay")[0] + "/2019";;
+		String fromDate=details.get("fromMonth")[0] + "/" + details.get("fromDay")[0] + "/2019";;
+		
+		List<String> list = new ArrayList<String>();
+		
+		return list;
 		
 		
 	}

@@ -8,10 +8,13 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalField;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.swing.Timer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +43,7 @@ import org.testng.annotations.Test;
 
 import assertpage.AssertPages;
 import data.Data;
+import events.EventHandling;
 import pages.PageLogin;
 import pages.PageReservation;
 import pages.Register;
@@ -63,7 +67,7 @@ public class Tests {
 	
 	@BeforeMethod
 	public void setUp() throws IOException, Exception, InvalidFormatException {
-
+		
 		System.out.println("Set up content");
 		//Data
 		data = new Data("./data.xlsx");
@@ -76,6 +80,10 @@ public class Tests {
 		String exePath = "Chrome Driver\\chromedriver.exe";
 		System.setProperty("webdriver.chrome.driver", exePath);
 		driver = new ChromeDriver();
+		
+		EventHandling event = new EventHandling(driver);
+		Timer timer = new Timer(3000,event);
+		
 		driver.manage().deleteAllCookies();
 		driver.navigate().to("http://newtours.demoaut.com/");
 
@@ -159,6 +167,13 @@ public class Tests {
 		List<Map<String,String>> returnList =pageReservation.flightsData("RETURN", to,toDate);
 		System.out.println("Departure List size: "+departureList.size());
 		System.out.println("Return List size: "+returnList.size());
+		
+		
+		driver.findElement(By.partialLinkText("Flights")).click();
+		Map<String,String> changes = new HashMap<String,String>();
+		changes.put("toPort", "Frankfurt");
+		Map<String,String[]> newDetails = pageReservation.changeOptions(details, changes);
+		pageReservation.bookFlight(newDetails);
 		driver.close();
 		
 		
