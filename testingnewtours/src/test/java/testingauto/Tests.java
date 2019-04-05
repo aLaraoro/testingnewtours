@@ -55,6 +55,7 @@ public class Tests {
 	//private List<Map<String,String>> autoLogin;
 	private Integer row;
 	private String expectedResult;
+	
 	private String description;
 	
 	ArrayList<String> tabs;

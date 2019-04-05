@@ -6,8 +6,10 @@ import org.openqa.selenium.WebDriver;
 
 public class Helpers {
 	
-
-	public Helpers() {
+	private WebDriver driver;
+	public Helpers(WebDriver driver) {
+		
+		this.driver = driver;
 		
 	}
 
@@ -21,6 +23,20 @@ public class Helpers {
 		}
 
 
+	}
+	
+	public void refreshPage(int seconds) {
+		
+		String title = driver.getTitle();
+		if(title.toLowerCase().contains("error")) {
+			
+			driver.navigate().refresh();
+			sleepSeconds(seconds);
+			
+			
+		}
+		
+		
 	}
 	
 
