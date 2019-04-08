@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.Timer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,9 +37,11 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.Assert;
 import org.testng.ITestResult;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import assertpage.AssertPages;
@@ -61,12 +63,11 @@ public class Tests {
 	private Integer row;
 	private String expectedResult;
 	private String description;
-	
 	ArrayList<String> tabs;
 
 	
-	@BeforeMethod
-	public void setUp() throws IOException, Exception, InvalidFormatException {
+	@BeforeClass//(groups= {"run"})
+	public void setUpTest() throws IOException, Exception, InvalidFormatException {
 		
 		System.out.println("Test");
 		//Data
@@ -81,13 +82,30 @@ public class Tests {
 		System.setProperty("webdriver.chrome.driver", exePath);
 		driver = new ChromeDriver();
 		
-		driver.manage().deleteAllCookies();
-		driver.navigate().to("http://newtours.demoaut.com/");
+		
 
+		
+		
 
 	}
 		
+
+	@BeforeMethod//(groups= {"parallel"})
+	public void init() {
+		EventHandling task = new EventHandling(driver);
+		Timer timer = new Timer();
+		timer.schedule(task, 1000L, 3000);
 		
+		
+	}
+	
+	@BeforeMethod//(groups= {"Test"})
+	public void runTest() {
+		
+		driver.manage().deleteAllCookies();
+		driver.navigate().to("http://newtours.demoaut.com/");
+				
+	}
 	/*
 	@Test
 	public void incorrectLogin() {
@@ -166,8 +184,8 @@ public class Tests {
 		
 	}*/
 	
-	@Test
-	public void reserveDefaultFlight() throws InterruptedException {
+	@Test//(groups= {"Test"})
+	public void reserveDefaultFlightTest() throws InterruptedException {
 		
 		System.out.println("Login and book");
 		displayTc = false;
@@ -194,7 +212,7 @@ public class Tests {
 	}
 	
 	
-	/*public void changeFromPort() throws InterruptedException {
+	/*public void changeFromPortTest() throws InterruptedException {
 		
 		
 		System.out.println("Login and book");
@@ -214,7 +232,7 @@ public class Tests {
 
 	/*
 	@Test
-	public void reservateWithoutLogin() {
+	public void reservateWithoutLoginTest() {
 		System.out.println("Ir página reservar vuelo sin login");
 		this.expectedResult = "Continue on index.php";
 		this.description = "Gp to Flight finder without login";
@@ -226,7 +244,7 @@ public class Tests {
 	}
 	
 	@Test
-	public void register() throws InterruptedException {
+	public void registerTest() throws InterruptedException {
 		System.out.println("Register");
 		Register register = new Register(driver);
 		Map<String, String> map = register.optional("a", "a", "654321777", "a@gmail.com", "Av. de la Torre Blanca, 57", "Sant Cugat del Vallés", "New York", "08172");
@@ -244,7 +262,7 @@ public class Tests {
 	}
 	
 	@Test
-	public void registerNoUser() throws InterruptedException {
+	public void registerNoUserTest() throws InterruptedException {
 		
 		System.out.println("Register");
 		System.out.println("No username");
@@ -374,7 +392,7 @@ public class Tests {
 		
 	}*/
 
-	@AfterMethod
+	@AfterMethod//(groups= {"Test"})
 	public void tearDown(ITestResult result) throws FileNotFoundException, IOException {
 		if(!result.isSuccess()) {
 			File myScreenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
@@ -391,7 +409,7 @@ public class Tests {
 		System.out.println("Tests/tearDown/TC Num:"+row);
 		if(displayTc) {
 			
-			this.tcResult(result);
+			this.tcResultTest(result);
 			
 		}
 			
@@ -403,7 +421,7 @@ public class Tests {
 	}
 	
 	
-	public void tcResult(ITestResult result) throws FileNotFoundException, IOException {
+	public void tcResultTest(ITestResult result) throws FileNotFoundException, IOException {
 		
 		String[] message = {"Message","null"};
 		
