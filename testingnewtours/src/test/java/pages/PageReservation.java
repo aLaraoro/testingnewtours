@@ -98,6 +98,20 @@ public class PageReservation {
 		
 	}
 	
+	public Boolean isConfirmed(Map<String,String[]> details) {
+		
+		Boolean bool = false;
+		List<String> departList = this.confirmation(details,"from");
+		List<String> returnList = this.confirmation(details,"to");
+		
+		AssertPages assertPages = new AssertPages(driver);
+		Boolean departAssert = assertPages.assertSelectFlight(departList);
+		Boolean returnAssert = assertPages.assertSelectFlight(returnList);
+		
+		return departAssert && returnAssert;
+		
+		
+	}
 	
 	public Map<String,String[]> changeOptions(Map<String,String[]> flyDetails, Map<String,String> changes){
 		
@@ -119,8 +133,9 @@ public class PageReservation {
 		
 	}
 	
-	public List<Map<String,String>> flightsData(List<String> listDest) {
+	public List<Map<String,String>> flightsData(Map<String,String[]> details,String first) {
 		
+		List<String> listDest = this.confirmation(details, first);
 		String flyRow = rowFly.replace("PATH", listDest.get(2));
 		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 		List<WebElement> rowElements = driver.findElements(By.xpath(flyRow));
@@ -157,6 +172,47 @@ public class PageReservation {
 		
 		}
 		
+		return list;
+		
+	}
+	
+	
+	
+	public List<String> compareTableAirline(Map<String,String[]> details, Map<String,String[]> newDetails, String path) {
+		
+		List<Map<String,String>> tab1 = this.flightsData(details,path);
+		int countSame = 0;
+		String bool;
+		int totalSize = tab1.size()*tab1.get(1).size();
+		System.out.println(totalSize);
+		List<String> list = new ArrayList<String>();
+		List<Map<String,String>> tab2 = this.flightsData(newDetails,path);
+		for(int i=0;i<tab1.size();i++) {
+			
+			tab1.get(i);
+			Map<String,Boolean> map = new HashMap<String,Boolean>();
+			for(Map.Entry<String, String> entry : tab1.get(i).entrySet()) {
+				
+				String key = entry.getKey();
+				
+				if(entry.getValue().equalsIgnoreCase(tab2.get(i).get(key))) {
+					countSame++;
+
+					
+				}
+				
+				
+				
+			}
+			
+			
+		}
+		
+		bool = countSame == totalSize? "false" : "true";
+		String perc = Integer.toString(100*(totalSize - countSame)/totalSize);
+		System.out.println(countSame + " Total: " + totalSize);
+		list.add(bool);
+		list.add(perc);
 		return list;
 		
 	}

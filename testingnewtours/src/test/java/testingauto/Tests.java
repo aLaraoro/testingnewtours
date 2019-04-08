@@ -64,9 +64,9 @@ public class Tests {
 	private String expectedResult;
 	private String description;
 	ArrayList<String> tabs;
-
+	Timer timer;
 	
-	@BeforeClass//(groups= {"run"})
+	@BeforeMethod
 	public void setUpTest() throws IOException, Exception, InvalidFormatException {
 		
 		System.out.println("Test");
@@ -82,30 +82,16 @@ public class Tests {
 		System.setProperty("webdriver.chrome.driver", exePath);
 		driver = new ChromeDriver();
 		
-		
-
-		
-		
-
-	}
-		
-
-	@BeforeMethod//(groups= {"parallel"})
-	public void init() {
 		EventHandling task = new EventHandling(driver);
-		Timer timer = new Timer();
-		timer.schedule(task, 1000L, 3000);
-		
-		
-	}
-	
-	@BeforeMethod//(groups= {"Test"})
-	public void runTest() {
-		
-		driver.manage().deleteAllCookies();
+		timer = new Timer();
+		timer.schedule(task, 1000L, 3000L);
 		driver.navigate().to("http://newtours.demoaut.com/");
-				
+		
+		
+
 	}
+		
+
 	/*
 	@Test
 	public void incorrectLogin() {
@@ -146,45 +132,51 @@ public class Tests {
 	}*/
 	
 	
-	/*@Test
+	@Test
 	public void compareTwoFlights() throws InterruptedException {
 		
-		System.out.println("Login and book");
+		System.out.println("Compare two Flights");
 		displayTc = false;
 		PageLogin pageLogin = new PageLogin(driver);
 		PageReservation pageReservation = new PageReservation(driver);
 		pageLogin.filter(0, list, false, true);
-		
+		this.expectedResult = "Different table Values";
 		
 		Map<String,String[]> details = pageReservation.getDetails();
 		
 		pageReservation.bookFlight(details);
 		
-		List<String> departList = pageReservation.confirmation(details,"from");
-		List<String> returnList = pageReservation.confirmation(details,"to");
-		AssertPages assertPages = new AssertPages(driver);
-		Boolean departAssert = assertPages.assertSelectFlight(departList);
-		Boolean returnAssert = assertPages.assertSelectFlight(returnList);
+		Boolean confirmed = pageReservation.isConfirmed(details);
+		System.out.println(confirmed);
+		if(confirmed) {
+			
+
+			
+			
+			driver.findElement(By.partialLinkText("Flights")).click();
+			Map<String,String> changes = new HashMap<String,String>();
+			changes.put("toPort", "Frankfurt");
+			Map<String,String[]> newDetails = pageReservation.changeOptions(details, changes);
+			pageReservation.bookFlight(newDetails);
+			
+			Boolean conf2 = pageReservation.isConfirmed(newDetails);
+			if(conf2) {
+				Boolean fromTable = Boolean.parseBoolean(pageReservation.compareTableAirline(details, newDetails, "from").get(0));
+				Boolean toTable = Boolean.parseBoolean(pageReservation.compareTableAirline(details, newDetails, "to").get(0));
+				String tot = pageReservation.compareTableAirline(details, newDetails, "from").get(1) + "% and " + pageReservation.compareTableAirline(details, newDetails, "to").get(1) + "% differences in Table Departure and Returns";
+				Assert.assertTrue(fromTable && toTable,"Expected: " + expectedResult + ". Found: " + tot);
+				
+			}
+			
+		}
 		
-		Assert.assertTrue((departAssert&&returnAssert));
 		
-		List<Map<String,String>> departureList = pageReservation.flightsData(departList);
-		List<Map<String,String>> returnedList =pageReservation.flightsData(returnList);
-		System.out.println("Departure List size: "+departureList.size());
-		System.out.println("Return List size: "+returnList.size());
-		
-		
-		driver.findElement(By.partialLinkText("Flights")).click();
-		Map<String,String> changes = new HashMap<String,String>();
-		changes.put("toPort", "Frankfurt");
-		Map<String,String[]> newDetails = pageReservation.changeOptions(details, changes);
-		pageReservation.bookFlight(newDetails);
 		driver.close();
 		
 		
-	}*/
+	}
 	
-	@Test//(groups= {"Test"})
+	@Test
 	public void reserveDefaultFlightTest() throws InterruptedException {
 		
 		System.out.println("Login and book");
@@ -198,14 +190,9 @@ public class Tests {
 		
 		pageReservation.bookFlight(details);
 		
-		List<String> departList = pageReservation.confirmation(details,"from");
-		List<String> returnList = pageReservation.confirmation(details,"to");
-		AssertPages assertPages = new AssertPages(driver);
-		Boolean departAssert = assertPages.assertSelectFlight(departList);
-		Boolean returnAssert = assertPages.assertSelectFlight(returnList);
-
+		Boolean confirmed = pageReservation.isConfirmed(details);
 		
-		Assert.assertTrue((departAssert&&returnAssert));
+		Assert.assertTrue(confirmed);
 		
 		driver.close();
 		
@@ -216,6 +203,7 @@ public class Tests {
 		
 		
 		System.out.println("Login and book");
+		System.out.println("Change from Port");
 		displayTc = false;
 		PageLogin pageLogin = new PageLogin(driver);
 		pageLogin.filter(0, list, false, true);
@@ -392,7 +380,7 @@ public class Tests {
 		
 	}*/
 
-	@AfterMethod//(groups= {"Test"})
+	@AfterMethod
 	public void tearDown(ITestResult result) throws FileNotFoundException, IOException {
 		if(!result.isSuccess()) {
 			File myScreenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
@@ -414,7 +402,7 @@ public class Tests {
 		}
 			
 		
-			
+		timer.cancel();	
 		
 		driver.quit();
 

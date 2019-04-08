@@ -5,10 +5,8 @@
     <classes>
       <class name="testingauto.Tests">
         <methods>
-          <include name="init"/>
-          <include name="runTest"/>
-          <include name="reserveDefaultFlightTest"/>
           <include name="setUpTest"/>
+          <include name="compareTwoFlights"/>
           <include name="tearDown"/>
         </methods>
       </class> <!-- testingauto.Tests -->
