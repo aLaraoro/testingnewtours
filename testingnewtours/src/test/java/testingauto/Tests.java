@@ -3,6 +3,7 @@ package testingauto;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.annotation.Retention;
 import java.sql.Array;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -59,16 +60,15 @@ public class Tests {
 	//private List<Map<String,String>> autoLogin;
 	private Integer row;
 	private String expectedResult;
-	
 	private String description;
 	
 	ArrayList<String> tabs;
-	
+
 	
 	@BeforeMethod
 	public void setUp() throws IOException, Exception, InvalidFormatException {
 		
-		System.out.println("Set up content");
+		System.out.println("Test");
 		//Data
 		data = new Data("./data.xlsx");
 		
@@ -80,9 +80,6 @@ public class Tests {
 		String exePath = "Chrome Driver\\chromedriver.exe";
 		System.setProperty("webdriver.chrome.driver", exePath);
 		driver = new ChromeDriver();
-		
-		EventHandling event = new EventHandling(driver);
-		Timer timer = new Timer(3000,event);
 		
 		driver.manage().deleteAllCookies();
 		driver.navigate().to("http://newtours.demoaut.com/");
@@ -131,7 +128,7 @@ public class Tests {
 	}*/
 	
 	
-	@Test
+	/*@Test
 	public void compareTwoFlights() throws InterruptedException {
 		
 		System.out.println("Login and book");
@@ -145,26 +142,16 @@ public class Tests {
 		
 		pageReservation.bookFlight(details);
 		
-		List<String> confirmList = new ArrayList<String>();
-		
-		String fromDate = details.get("fromMonth")[0] + "/" + details.get("fromDay")[0] + "/2019";
-		String toDate = details.get("toMonth")[0] + "/" + details.get("toDay")[0] + "/2019";
-		
-		String from = details.get("fromPort")[0] + " to " + details.get("toPort")[0];
-		String to = details.get("toPort")[0] + " to " + details.get("fromPort")[0];
-		
-		confirmList.add(0,from);
-		confirmList.add(1,to);
-		confirmList.add(2,fromDate);
-		confirmList.add(3,toDate);
+		List<String> departList = pageReservation.confirmation(details,"from");
+		List<String> returnList = pageReservation.confirmation(details,"to");
 		AssertPages assertPages = new AssertPages(driver);
-		Boolean departAssert = assertPages.assertSelectFlight(confirmList, "DEPART",0);
-		Boolean returnAssert = assertPages.assertSelectFlight(confirmList, "RETURN",1);
+		Boolean departAssert = assertPages.assertSelectFlight(departList);
+		Boolean returnAssert = assertPages.assertSelectFlight(returnList);
 		
 		Assert.assertTrue((departAssert&&returnAssert));
 		
-		List<Map<String,String>> departureList = pageReservation.flightsData("DEPART",from,fromDate);
-		List<Map<String,String>> returnList =pageReservation.flightsData("RETURN", to,toDate);
+		List<Map<String,String>> departureList = pageReservation.flightsData(departList);
+		List<Map<String,String>> returnedList =pageReservation.flightsData(returnList);
 		System.out.println("Departure List size: "+departureList.size());
 		System.out.println("Return List size: "+returnList.size());
 		
@@ -177,7 +164,7 @@ public class Tests {
 		driver.close();
 		
 		
-	}
+	}*/
 	
 	@Test
 	public void reserveDefaultFlight() throws InterruptedException {
@@ -193,21 +180,12 @@ public class Tests {
 		
 		pageReservation.bookFlight(details);
 		
-		List<String> confirmList = new ArrayList<String>();
-		
-		String fromDate = details.get("fromMonth")[0] + "/" + details.get("fromDay")[0] + "/2019";
-		String toDate = details.get("toMonth")[0] + "/" + details.get("toDay")[0] + "/2019";
-		
-		String from = details.get("fromPort")[0] + " to " + details.get("toPort")[0];
-		String to = details.get("toPort")[0] + " to " + details.get("fromPort")[0];
-		
-		confirmList.add(0,from);
-		confirmList.add(1,to);
-		confirmList.add(2,fromDate);
-		confirmList.add(3,toDate);
+		List<String> departList = pageReservation.confirmation(details,"from");
+		List<String> returnList = pageReservation.confirmation(details,"to");
 		AssertPages assertPages = new AssertPages(driver);
-		Boolean departAssert = assertPages.assertSelectFlight(confirmList, "DEPART",0);
-		Boolean returnAssert = assertPages.assertSelectFlight(confirmList, "RETURN",1);
+		Boolean departAssert = assertPages.assertSelectFlight(departList);
+		Boolean returnAssert = assertPages.assertSelectFlight(returnList);
+
 		
 		Assert.assertTrue((departAssert&&returnAssert));
 		

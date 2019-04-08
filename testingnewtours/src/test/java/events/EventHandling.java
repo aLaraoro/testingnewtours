@@ -13,6 +13,7 @@ public class EventHandling implements ActionListener {
 		// TODO Auto-generated constructor stub
 		
 		this.driver = driver;
+		System.out.println("Running");
 		this.errorTitle(driver.getTitle());
 	}
 	
@@ -20,13 +21,19 @@ public class EventHandling implements ActionListener {
 	
 	
 	public void errorTitle(String title) {
-
+		
 		if(title.toLowerCase().contains("error")) {
 			System.out.println("Error");
-			driver.navigate().refresh();
+			/*driver.navigate().refresh();
 			Helpers help = new Helpers();
 			
-			help.sleepSeconds(3);
+			help.sleepSeconds(3);*/
+			
+			driver.close();
+		}else {
+			
+			return;
+			
 		}
 		
 		

@@ -66,15 +66,34 @@ public class PageReservation {
 		
 	}
 	
-	public List<String> confirmation(Map<String,String[]> details){
-		String fromPort=details.get("fromPort")[0];
-		String toPort=details.get("toPort")[0];
-		String toDate=details.get("toMonth")[0] + "/" + details.get("toDay")[0] + "/2019";;
-		String fromDate=details.get("fromMonth")[0] + "/" + details.get("fromDay")[0] + "/2019";;
+	public List<String> confirmation(Map<String,String[]> details,String first){
+
 		
-		List<String> list = new ArrayList<String>();
+		String date = details.get(first+"Month")[0] + "/" + details.get(first+"Day")[0] + "/2019";
+		String place = "";
+
+		List<String> confirmList = new ArrayList<String>();
 		
-		return list;
+		String dest = "";
+
+		
+		if(first == "to") {
+			
+			dest = details.get("toPort")[0] + " to " + details.get("fromPort")[0];
+			place="RETURN";
+
+			
+		}else {
+			
+			dest = details.get("fromPort")[0] + " to " + details.get("toPort")[0];
+			place ="DEPART";
+			
+		}
+		confirmList.add(dest);
+		confirmList.add(date);
+		confirmList.add(place);
+		
+		return confirmList;
 		
 		
 	}
@@ -100,9 +119,9 @@ public class PageReservation {
 		
 	}
 	
-	public List<Map<String,String>> flightsData(String place,String destination, String date) {
+	public List<Map<String,String>> flightsData(List<String> listDest) {
 		
-		String flyRow = rowFly.replace("PATH", place);
+		String flyRow = rowFly.replace("PATH", listDest.get(2));
 		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 		List<WebElement> rowElements = driver.findElements(By.xpath(flyRow));
 		System.out.println(rowElements.size());
@@ -128,8 +147,8 @@ public class PageReservation {
 			String priceTag = driver.findElement(By.xpath(pathName3)).getText();
 			
 			String price = priceTag.substring(priceTag.indexOf("$")+1, priceTag.length());
-			map.put("Destination", destination);
-			map.put("Day", date);
+			map.put("Destination", listDest.get(0));
+			map.put("Day", listDest.get(1));
 			map.put("Airline", data);
 			map.put("Time", time);
 			map.put("Price", price);

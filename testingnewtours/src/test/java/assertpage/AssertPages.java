@@ -34,12 +34,12 @@ public class AssertPages {
 	}
 	
 	
-	public Boolean assertSelectFlight(List<String> confirmList, String place, int num) {
+	public Boolean assertSelectFlight(List<String> confirmList) {
 		
 		Boolean bool = false;
-		
-		String name = confirmList.get(num) + " " + confirmList.get(num+2);
-		String path = flyPath.replace("PATH", place);
+		String plac = confirmList.get(2);
+		String name = confirmList.get(0) + " " + confirmList.get(1);
+		String path = flyPath.replace("PATH", plac);
 		
 		List<WebElement> elements = driver.findElements(By.xpath(path));
 		
